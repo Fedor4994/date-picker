@@ -1,0 +1,32 @@
+.dateCells {
+  width: 777px;
+  margin-left: auto;
+  margin-right: auto;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  border-left: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+}
+
+.dateCellItem {
+  text-align: right;
+  padding: 5px;
+  width: 100px;
+  height: 100px;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+
+.dateCellItemCurrent {
+  color: red;
+}
+
+.buttonsWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
