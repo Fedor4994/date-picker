@@ -25,6 +25,15 @@ const DAYS_OF_WEEK = ["Mon", "Tue", "Wen", "Thu", "Fri", "Sut", "Sun"];
 
 const VISIBLE_CELLS_AMOUNT = 7 * 6;
 
+const MONDAY_WEEK_MAP: Record<number, number> = {
+  0: 6,
+  1: 0,
+  2: 1,
+  3: 2,
+  4: 3,
+  5: 4,
+  6: 5,
+};
 interface DateCellItem {
   year: number;
   month: number;
@@ -35,6 +44,12 @@ const getDaysAmountInAMonth = (year: number, month: number) => {
   const nextMonthDate = new Date(year, month + 1, 1);
   nextMonthDate.setMinutes(-1);
   return nextMonthDate.getDate();
+};
+
+const getDaysOfTheWeek = (date: Date) => {
+  const day = date.getDay();
+
+  return MONDAY_WEEK_MAP[day];
 };
 
 const getCurrentMonthDays = (
@@ -57,8 +72,7 @@ const getCurrentMonthDays = (
 
 const getPreviousMonthDays = (year: number, month: number) => {
   const previousMonthFirstDay = new Date(year, month, 1);
-  const dayOfWeek = previousMonthFirstDay.getDay();
-  const prevMonthCellsAmount = dayOfWeek - 1;
+  const prevMonthCellsAmount = getDaysOfTheWeek(previousMonthFirstDay);
 
   const dayAmountInPrevMonth = getDaysAmountInAMonth(year, month - 1);
 
@@ -78,9 +92,8 @@ const getPreviousMonthDays = (year: number, month: number) => {
 };
 
 const getNextMonthDays = (year: number, month: number) => {
-  const previousMonthFirstDay = new Date(year, month, 1);
-  const dayOfWeek = previousMonthFirstDay.getDay();
-  const prevMonthCellsAmount = dayOfWeek - 1;
+  const currentMonthFirstDay = new Date(year, month, 1);
+  const prevMonthCellsAmount = getDaysOfTheWeek(currentMonthFirstDay);
 
   const daysAmount = getDaysAmountInAMonth(year, month);
   const nextMonthDays =
