@@ -17,9 +17,10 @@
   height: 100px;
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
+  cursor: pointer;
 }
 
-.dateCellItemCurrent {
+.dateCellItemToday {
   color: red;
 }
 
@@ -29,4 +30,30 @@
   justify-content: center;
   gap: 20px;
   padding: 20px;
+}
+
+.datePickerPopup {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.dataPickerWrapper {
+  position: relative;
+}
+
+.dateCellItemCurrent .dataCellItemDate {
+  background-color: red;
+  color: white;
+}
+
+.dataCellItemDate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  padding: 4px;
+  margin-left: auto;
 }

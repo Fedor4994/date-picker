@@ -7,7 +7,7 @@ function App() {
 
   return (
     <div className="App">
-      {date.toString().slice(0, 15)}
+      <h1>{date.toDateString()}</h1>
       <DatePicker value={date} onChange={setDate} />
     </div>
   );

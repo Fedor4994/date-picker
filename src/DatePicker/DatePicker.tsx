@@ -1,122 +1,19 @@
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import s from "./DatePicker.module.css";
-
-interface DatePickerProps {
-  value: Date;
-  onChange: (value: Date) => void;
-}
-
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
-const DAYS_OF_WEEK = ["Mon", "Tue", "Wen", "Thu", "Fri", "Sut", "Sun"];
-
-const VISIBLE_CELLS_AMOUNT = 7 * 6;
-
-const MONDAY_WEEK_MAP: Record<number, number> = {
-  0: 6,
-  1: 0,
-  2: 1,
-  3: 2,
-  4: 3,
-  5: 4,
-  6: 5,
-};
-interface DateCellItem {
-  year: number;
-  month: number;
-  day: number;
-}
-
-const getDaysAmountInAMonth = (year: number, month: number) => {
-  const nextMonthDate = new Date(year, month + 1, 1);
-  nextMonthDate.setMinutes(-1);
-  return nextMonthDate.getDate();
-};
-
-const getDaysOfTheWeek = (date: Date) => {
-  const day = date.getDay();
-
-  return MONDAY_WEEK_MAP[day];
-};
-
-const getCurrentMonthDays = (
-  year: number,
-  month: number,
-  numberOfDays: number
-) => {
-  const dateCells: DateCellItem[] = [];
-
-  for (let i = 1; i <= numberOfDays; i++) {
-    dateCells.push({
-      year,
-      month,
-      day: i,
-    });
-  }
-
-  return dateCells;
-};
-
-const getPreviousMonthDays = (year: number, month: number) => {
-  const previousMonthFirstDay = new Date(year, month, 1);
-  const prevMonthCellsAmount = getDaysOfTheWeek(previousMonthFirstDay);
-
-  const dayAmountInPrevMonth = getDaysAmountInAMonth(year, month - 1);
-
-  const dateCells: DateCellItem[] = [];
-  const [cellYear, cellMonth] =
-    month === 0 ? [year - 1, 11] : [year, month - 1];
-
-  for (let i = 0; i < prevMonthCellsAmount; i++) {
-    dateCells.unshift({
-      year: cellYear,
-      month: cellMonth,
-      day: dayAmountInPrevMonth - i,
-    });
-  }
-
-  return dateCells;
-};
-
-const getNextMonthDays = (year: number, month: number) => {
-  const currentMonthFirstDay = new Date(year, month, 1);
-  const prevMonthCellsAmount = getDaysOfTheWeek(currentMonthFirstDay);
-
-  const daysAmount = getDaysAmountInAMonth(year, month);
-  const nextMonthDays =
-    VISIBLE_CELLS_AMOUNT - daysAmount - prevMonthCellsAmount;
-
-  const dateCells: DateCellItem[] = [];
-  const [cellYear, cellMonth] =
-    month === 11 ? [year + 1, 0] : [year, month + 1];
-
-  for (let i = 1; i <= nextMonthDays; i++) {
-    dateCells.push({
-      year: cellYear,
-      month: cellMonth,
-      day: i,
-    });
-  }
-
-  return dateCells;
-};
+import {
+  getCurrentMonthDays,
+  getDaysAmountInAMonth,
+  getNextMonthDays,
+  getPreviousMonthDays,
+  isToday,
+} from "./utils";
+import { DateCellItem, DatePickerProps } from "../types/DatePicker.types";
+import { DAYS_OF_WEEK } from "../constants/DatePicker.constants";
 
 export const DatePicker = ({ value, onChange }: DatePickerProps) => {
   const [panelYear, setPanelYear] = useState(() => value.getFullYear());
   const [panelMonth, setPanelMonth] = useState(() => value.getMonth());
+  const todayDate = useMemo(() => new Date(), []);
 
   const [year, month, day] = useMemo(() => {
     const currentYear = value.getFullYear();
@@ -125,6 +22,11 @@ export const DatePicker = ({ value, onChange }: DatePickerProps) => {
 
     return [currentYear, currentMonth, currentDay];
   }, [value]);
+
+  useLayoutEffect(() => {
+    setPanelMonth(month);
+    setPanelYear(year);
+  }, [year, month]);
 
   const dataCells = useMemo(() => {
     const daysInAMonth = getDaysAmountInAMonth(panelYear, panelMonth);
@@ -141,7 +43,6 @@ export const DatePicker = ({ value, onChange }: DatePickerProps) => {
   }, [panelMonth, panelYear]);
 
   const onDataSelect = ({ year, month, day }: DateCellItem) => {
-    console.log({ year, month, day });
     onChange(new Date(year, month, day));
   };
 
@@ -200,9 +101,9 @@ export const DatePicker = ({ value, onChange }: DatePickerProps) => {
               style={dataCell.month === panelMonth ? {} : { color: "#ccc" }}
               className={`${s.dateCellItem} ${
                 isCurrentDate && s.dateCellItemCurrent
-              }`}
+              } ${isToday(todayDate, dataCell) && s.dateCellItemToday}`}
             >
-              {dataCell.day}
+              <div className={s.dataCellItemDate}> {dataCell.day}</div>
             </div>
           );
         })}
